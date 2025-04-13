@@ -1,0 +1,10 @@
+[project]
+name = "backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.115.12",
+    "pydantic-settings>=2.8.1",
+    "python-jwt>=4.1.0",
+    "redis>=5.2.1",
+]
