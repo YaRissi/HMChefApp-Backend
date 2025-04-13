@@ -37,6 +37,7 @@ async def register(form_data: OAuth2PasswordRequestForm = Depends()):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username and password are required",
         )
+    
     token = await auth_service.register_user(form_data.username, form_data.password)
     if token:
         return JSONResponse(

@@ -83,6 +83,21 @@ class RedisHandler:
             await self.redis_instance.set(f"{user}_password", hashed_password)
         except Exception as redis_error:
             self.logger.error(f"Failed to add user to Redis: {redis_error}")
+    
+    async def check_user(self, user: str) -> bool:
+        """Check if a user exists in Redis.
+
+        Args:
+            user (str): The user to check.
+
+        Returns:
+            bool: True if the user exists, False otherwise.
+        """
+        try:
+            return await self.redis_instance.exists(f"{user}_password") == 1
+        except Exception as redis_error:
+            self.logger.error(f"Failed to check user in Redis: {redis_error}")
+            return False
 
     async def get_user_password(self, user: str) -> str:
         """Get a user's password from Redis.

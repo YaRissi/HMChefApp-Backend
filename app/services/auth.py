@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from app.services.redis_hander import RedisHandler
 import jwt
 from datetime import datetime, timedelta
@@ -58,6 +59,11 @@ async def register_user(username: str, password: str) -> str:
     Returns:
         str: Das generierte JWT-Token.
     """
+    if await REDIS_HANDLER.check_user(username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists",
+        )
     hashed_password = PWD_CONTEXT.hash(password)
     await REDIS_HANDLER.set_user_password(username, hashed_password)
     
