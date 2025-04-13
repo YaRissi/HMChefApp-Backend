@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import List
 
 from redis import RedisError
 from redis.commands.json.path import Path
@@ -71,7 +71,34 @@ class RedisHandler:
             self.logger.info(f"Deleted Recipe from Redis: user={user}, id={id}")
         except Exception as redis_error:
             self.logger.error(f"Failed to delete Recipe from Redis: {redis_error}")
-    
+
+    async def set_user_password(self, user: str, hashed_password: str) -> None:
+        """Set a user's password in Redis.
+
+        Args:
+            user (str): The user to set the password for.
+            hashed_password (str): The hashed password to set.
+        """
+        try:
+            await self.redis_instance.set(f"{user}_password", hashed_password)
+        except Exception as redis_error:
+            self.logger.error(f"Failed to add user to Redis: {redis_error}")
+
+    async def get_user_password(self, user: str) -> str:
+        """Get a user's password from Redis.
+
+        Args:
+            user (str): The user to get the password for.
+
+        Returns:
+            str: The hashed password.
+        """
+        try:
+            return await self.redis_instance.get(f"{user}_password")
+        except Exception as redis_error:
+            self.logger.error(f"Failed to get user from Redis: {redis_error}")
+            return ""    
+        
     async def close(self) -> None:
         """Close the Redis connection."""
         try:

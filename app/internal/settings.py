@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     REDIS_URL: str 
 
-    SECRET_KEY: str = "IHR_GEHEIMES_SCHLÜSSEL_HIER"
+    SECRET_KEY: str
 
 
 settings = Settings()
