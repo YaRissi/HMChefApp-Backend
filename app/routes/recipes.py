@@ -40,7 +40,7 @@ async def get_recipes(request: Request, user: str):
             detail=f"Failed to get Recipes for user: {user}: {redis_error}",
         )
 
-@router.post("/{user}")
+@router.post("/")
 async def create_recipe(request: Request, user: str, recipe: Recipe):
     """Create a Recipe for a user."""
     if not user:
@@ -58,7 +58,7 @@ async def create_recipe(request: Request, user: str, recipe: Recipe):
             detail=f"Failed to add Recipe to user: {user}: {redis_error}",
         )
 
-@router.delete("/{user}")
+@router.delete("/")
 async def delete_recipe(request: Request, user: str, id: str):
     """Delete a Recipe for a user."""
     if not user:
