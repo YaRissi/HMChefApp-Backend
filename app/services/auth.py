@@ -1,11 +1,12 @@
-from fastapi import HTTPException, status
-from app.services.redis_hander import RedisHandler
-import jwt
 from datetime import datetime, timedelta
-from typing import Tuple, Dict, Any, Optional
-from app.internal.settings import settings
+from typing import Any, Dict, Optional, Tuple
+
+import jwt
+from fastapi import HTTPException, status
 from passlib.context import CryptContext
 
+from app.internal.settings import settings
+from app.services.redis_hander import RedisHandler
 
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 REDIS_HANDLER = RedisHandler()

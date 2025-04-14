@@ -2,8 +2,8 @@ import logging
 from typing import List
 
 from redis import RedisError
-from redis.commands.json.path import Path
 from redis.asyncio import Redis as AsyncRedis
+from redis.commands.json.path import Path
 
 from app.internal.settings import settings
 from app.models.models import Recipe

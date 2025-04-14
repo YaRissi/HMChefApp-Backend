@@ -1,6 +1,5 @@
 """Authentication routes for user login and registration."""
-from fastapi import APIRouter
-from fastapi import Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 

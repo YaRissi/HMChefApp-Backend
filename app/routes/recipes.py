@@ -2,9 +2,9 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
+import app.services.auth as auth_service
 from app.models.models import Recipe, RecipeResponse
 from app.services.redis_hander import RedisHandler
-import app.services.auth as auth_service
 
 redis_handler = RedisHandler()
 
