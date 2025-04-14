@@ -1,4 +1,5 @@
 """Recipes API routes."""
+
 from fastapi import APIRouter, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
@@ -85,7 +86,7 @@ async def create_recipe(request: Request, user: str, recipe: Recipe):
     Args:
         request (Request): current request object
         user (str): username of the user
-        recipe (Recipe): recipe data to be added    
+        recipe (Recipe): recipe data to be added
 
     Raises:
         HTTPException: user parameter is missing || the validation fails

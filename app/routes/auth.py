@@ -1,4 +1,5 @@
 """Authentication routes for user login and registration."""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -26,7 +27,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"access_token": token},
-        ) 
+        )
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credentials",
@@ -37,7 +38,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.post("/register")
 async def register(form_data: OAuth2PasswordRequestForm = Depends()):
     """Register a new user.
-    
+
     Args:
         form_data (OAuth2PasswordRequestForm): The OAuth2 form data containing username and password.
 
