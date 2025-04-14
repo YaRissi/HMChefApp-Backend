@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    REDIS_URL: str 
+    REDIS_URL: str
 
     SECRET_KEY: str
 

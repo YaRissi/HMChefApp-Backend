@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 REDIS_HANDLER = RedisHandler()
 
+
 async def validate_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
     """Validiert ein JWT-Token und gibt ein Tupel zurück (ist_gültig, Benutzer_info).
 
@@ -21,13 +22,16 @@ async def validate_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
     """
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        
-        if "exp" in payload and datetime.fromtimestamp(payload["exp"], tz=datetime.timezone.utc) < datetime.now(datetime.timezone.utc):
+
+        if "exp" in payload and datetime.fromtimestamp(
+            payload["exp"], tz=datetime.timezone.utc
+        ) < datetime.now(datetime.timezone.utc):
             return False, None
-        
+
         return True, payload
     except jwt.PyJWTError:
         return False, None
+
 
 async def create_token(data: dict, expires_delta: timedelta = None) -> str:
     """Erstellt ein neues JWT-Token.
@@ -41,11 +45,11 @@ async def create_token(data: dict, expires_delta: timedelta = None) -> str:
         str: Das generierte JWT-Token.
     """
     to_encode = data.copy()
-    
+
     if expires_delta is not None:
         expire = datetime.now(datetime.timezone.utc) + expires_delta
         to_encode.update({"exp": expire})
-    
+
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")
 
 
@@ -66,10 +70,11 @@ async def register_user(username: str, password: str) -> str:
         )
     hashed_password = PWD_CONTEXT.hash(password)
     await REDIS_HANDLER.set_user_password(username, hashed_password)
-    
+
     token = await create_token({"username": username})
-    
+
     return token
+
 
 async def authenticate_user(username: str, password: str) -> Optional[str]:
     """Authentifiziert einen Benutzer und gibt ein Token zurück.
@@ -82,9 +87,9 @@ async def authenticate_user(username: str, password: str) -> Optional[str]:
         Optional[str]: Das generierte JWT-Token oder None, wenn die Authentifizierung fehlschlägt.
     """
     user_hashed_password = await REDIS_HANDLER.get_user_password(username)
-    
+
     if user_hashed_password and PWD_CONTEXT.verify(password, user_hashed_password):
         token = await create_token({"username": username})
         return token
-    
+
     return None

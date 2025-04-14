@@ -15,7 +15,7 @@ class RedisHandler:
             f"{settings.REDIS_URL}/{database}",
             decode_responses=True,
             max_connections=30,
-            health_check_interval=30, 
+            health_check_interval=30,
         )
         self.logger = logging.getLogger(__name__)
 
@@ -31,12 +31,14 @@ class RedisHandler:
             exists = await self.redis_instance.exists(user)
             if not exists:
                 await self.redis_instance.json().set(user, Path.root_path(), {})
-            
-            await self.redis_instance.json().set(user, Path(f'.{value["id"]}'), value)
-            self.logger.info(f"Set Recipe in Redis: user={user}, recipe_id={value["id"]}")
+
+            await self.redis_instance.json().set(user, Path(f".{value['id']}"), value)
+            self.logger.info(
+                f"Set Recipe in Redis: user={user}, recipe_id={value['id']}"
+            )
         except Exception as redis_error:
             self.logger.error(f"Failed to set Recipes in Redis: {redis_error}")
-    
+
     async def get_recipes(self, user: str, path: str = ".") -> List[Recipe]:
         """Get a Recipe from Redis.
 
@@ -56,8 +58,7 @@ class RedisHandler:
             return all_recipes
         except Exception as redis_error:
             self.logger.error(f"Failed to get Recipes from Redis: {redis_error}")
-            return [] 
-    
+            return []
 
     async def delete_recipe(self, user: str, id: str) -> None:
         """Delete a Recipe from Redis.
@@ -67,7 +68,7 @@ class RedisHandler:
             id (str): The ID of the Recipe to delete.
         """
         try:
-            await self.redis_instance.json().delete(user ,Path(f'.{id}'))
+            await self.redis_instance.json().delete(user, Path(f".{id}"))
             self.logger.info(f"Deleted Recipe from Redis: user={user}, id={id}")
         except Exception as redis_error:
             self.logger.error(f"Failed to delete Recipe from Redis: {redis_error}")
@@ -83,7 +84,7 @@ class RedisHandler:
             await self.redis_instance.set(f"{user}_password", hashed_password)
         except Exception as redis_error:
             self.logger.error(f"Failed to add user to Redis: {redis_error}")
-    
+
     async def check_user(self, user: str) -> bool:
         """Check if a user exists in Redis.
 
@@ -112,8 +113,8 @@ class RedisHandler:
             return await self.redis_instance.get(f"{user}_password")
         except Exception as redis_error:
             self.logger.error(f"Failed to get user from Redis: {redis_error}")
-            return ""    
-        
+            return ""
+
     async def close(self) -> None:
         """Close the Redis connection."""
         try:

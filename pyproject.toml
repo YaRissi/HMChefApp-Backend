@@ -10,3 +10,12 @@ dependencies = [
     "pyjwt>=2.10.1",
     "redis>=5.2.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pylint>=3.3.6",
+    "ruff>=0.11.5",
+]
+
+[tool.pylint.format]
+max-line-length = 120
