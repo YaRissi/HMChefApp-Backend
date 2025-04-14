@@ -1,6 +1,6 @@
 """Recipes API routes."""
 
-from fastapi import APIRouter, FastAPI, HTTPException, Request, status
+from fastapi import APIRouter, FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
 import app.services.auth as auth_service
@@ -113,13 +113,15 @@ async def create_recipe(request: Request, user: str, recipe: Recipe):
 
 
 @router.delete("/")
-async def delete_recipe(request: Request, user: str, id: str):
+async def delete_recipe(
+    request: Request, user: str, recipe_id: str = Query(alias="id")
+):
     """Delete a Recipe for a user.
 
     Args:
         request (Request): current request object
         user (str): username of the user
-        id (str): ID of the recipe to be deleted
+        recipe_id (str): ID of the recipe to be deleted (alias: "id")
 
     Raises:
         HTTPException: user parameter is missing || the validation fails || the recipe ID is invalid or not found
@@ -133,7 +135,7 @@ async def delete_recipe(request: Request, user: str, id: str):
         )
     await validate_header(request, user)
     try:
-        await redis_handler.delete_recipe(user, id)
+        await redis_handler.delete_recipe(user, recipe_id)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"message": "Recipe deleted successfully"},

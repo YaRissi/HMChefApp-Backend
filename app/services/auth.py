@@ -1,4 +1,6 @@
-from datetime import datetime, timedelta
+"""Service for authentication and token management."""
+
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 
 import jwt
@@ -25,8 +27,8 @@ async def validate_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
 
         if "exp" in payload and datetime.fromtimestamp(
-            payload["exp"], tz=datetime.timezone.utc
-        ) < datetime.now(datetime.timezone.utc):
+            payload["exp"], tz=timezone.utc
+        ) < datetime.now(timezone.utc):
             return False, None
 
         return True, payload
@@ -48,7 +50,7 @@ async def create_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
 
     if expires_delta is not None:
-        expire = datetime.now(datetime.timezone.utc) + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
         to_encode.update({"exp": expire})
 
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")

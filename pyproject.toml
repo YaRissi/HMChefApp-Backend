@@ -20,3 +20,9 @@ dev = [
 
 [tool.pylint.format]
 max-line-length = 120
+
+[tool.pylint.messages_control]
+disable = [
+    "broad-exception-caught",
+    "logging-fstring-interpolation",
+]

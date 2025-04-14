@@ -1,3 +1,5 @@
+"""Service for interacting with Redis."""
+
 import logging
 from typing import List
 
@@ -10,6 +12,8 @@ from app.models.models import Recipe
 
 
 class RedisHandler:
+    """Handler class for Redis operations."""
+
     def __init__(self, database: int = 0):
         self.redis_instance = AsyncRedis.from_url(
             f"{settings.REDIS_URL}/{database}",
@@ -51,16 +55,16 @@ class RedisHandler:
         try:
             recipes = await self.redis_instance.json().get(user, Path(path))
             all_recipes = []
-            for id in recipes.keys():
-                recipes[id]["id"] = id
-                all_recipes.append(recipes[id])
+            for key in recipes.keys():
+                recipes[key]["id"] = key
+                all_recipes.append(recipes[key])
             self.logger.info(f"Retrieved Recipes from Redis: user={user}")
             return all_recipes
         except Exception as redis_error:
             self.logger.error(f"Failed to get Recipes from Redis: {redis_error}")
             return []
 
-    async def delete_recipe(self, user: str, id: str) -> None:
+    async def delete_recipe(self, user: str, recipe_id: str) -> None:
         """Delete a Recipe from Redis.
 
         Args:
@@ -68,8 +72,10 @@ class RedisHandler:
             id (str): The ID of the Recipe to delete.
         """
         try:
-            await self.redis_instance.json().delete(user, Path(f".{id}"))
-            self.logger.info(f"Deleted Recipe from Redis: user={user}, id={id}")
+            await self.redis_instance.json().delete(user, Path(f".{recipe_id}"))
+            self.logger.info(
+                f"Deleted Recipe from Redis: user={user}, recipe_id={recipe_id}"
+            )
         except Exception as redis_error:
             self.logger.error(f"Failed to delete Recipe from Redis: {redis_error}")
 
