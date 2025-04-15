@@ -50,7 +50,7 @@ async def validate_header(request: Request, user: str = None) -> str:
     return user
 
 
-@router.get("/", response_model=RecipeResponse)
+@router.get("", response_model=RecipeResponse)
 async def get_recipes(request: Request, user: str):
     """Get all Recipes for a user.
 
@@ -79,7 +79,7 @@ async def get_recipes(request: Request, user: str):
         ) from redis_error
 
 
-@router.post("/")
+@router.post("")
 async def create_recipe(request: Request, user: str, recipe: Recipe):
     """Create a Recipe for a user.
 
@@ -103,7 +103,10 @@ async def create_recipe(request: Request, user: str, recipe: Recipe):
         await redis_handler.add_recipes(user, recipe.model_dump())
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
-            content={"message": "Recipe added successfully"},
+            content={
+                "message": "Recipe added successfully",
+                "success": True,
+            },
         )
     except Exception as redis_error:
         raise HTTPException(
@@ -112,7 +115,7 @@ async def create_recipe(request: Request, user: str, recipe: Recipe):
         ) from redis_error
 
 
-@router.delete("/")
+@router.delete("")
 async def delete_recipe(
     request: Request, user: str, recipe_id: str = Query(alias="id")
 ):
@@ -138,7 +141,10 @@ async def delete_recipe(
         await redis_handler.delete_recipe(user, recipe_id)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={"message": "Recipe deleted successfully"},
+            content={
+                "message": "Recipe deleted successfully",
+                "success": True
+            },
         )
     except Exception as redis_error:
         raise HTTPException(
