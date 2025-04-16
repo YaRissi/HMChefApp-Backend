@@ -74,7 +74,9 @@ class RedisHandler:
         try:
             recipe = await self.redis_instance.json().get(user, Path(f".{recipe_id}"))
             if not recipe:
-                self.logger.warning(f"Recipe not found: user={user}, recipe_id={recipe_id}")
+                self.logger.warning(
+                    f"Recipe not found: user={user}, recipe_id={recipe_id}"
+                )
                 return None
             await self.redis_instance.json().delete(user, Path(f".{recipe_id}"))
             self.logger.info(

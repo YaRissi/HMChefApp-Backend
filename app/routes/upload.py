@@ -1,17 +1,30 @@
-from typing import Annotated
-from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Query, Request, status
+"""Upload file to UploadThing and store the mapping."""
+
+from fastapi import (
+    APIRouter,
+    FastAPI,
+    File,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import JSONResponse
+
 from app.routes.recipes import validate_header
 from app.services.uploadthing_service import UploadThingService
 
-
 uploadthing_service = UploadThingService()
 
-async def lifespan(app: FastAPI):
+
+async def lifespan(_: FastAPI):
+    """lipespan event for the FastAPI application, to close the UploadThing service."""
     yield
     await uploadthing_service.close()
 
+
 router = APIRouter(lifespan=lifespan)
+
 
 @router.post("")
 async def upload_file(
@@ -37,13 +50,9 @@ async def upload_file(
 
     file_data = await file.read()
     file_type = file.content_type or "application/octet-stream"
-    
+
     url = uploadthing_service.upload_file(file_data, file_type, user)
-    
+
     return JSONResponse(
-        content={
-            "user": user,
-            "image_url": url
-        },
-        status_code=status.HTTP_200_OK
+        content={"user": user, "image_url": url}, status_code=status.HTTP_200_OK
     )

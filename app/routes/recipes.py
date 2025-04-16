@@ -11,6 +11,7 @@ from app.services.uploadthing_service import UploadThingService
 redis_handler = RedisHandler()
 uploadthing_service = UploadThingService()
 
+
 async def lifespan(_: FastAPI):
     """Lifespan event for the FastAPI application, to close the Redis handler."""
     yield
@@ -149,10 +150,7 @@ async def delete_recipe(
             )
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={
-                "message": "Recipe deleted successfully",
-                "success": True
-            },
+            content={"message": "Recipe deleted successfully", "success": True},
         )
     except Exception as redis_error:
         raise HTTPException(
