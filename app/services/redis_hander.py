@@ -64,18 +64,23 @@ class RedisHandler:
             self.logger.error(f"Failed to get Recipes from Redis: {redis_error}")
             return []
 
-    async def delete_recipe(self, user: str, recipe_id: str) -> None:
+    async def delete_recipe(self, user: str, recipe_id: str) -> str:
         """Delete a Recipe from Redis.
 
         Args:
             user (str): The user to delete the Recipe for.
-            id (str): The ID of the Recipe to delete.
+            recipe_id (str): The ID of the Recipe to delete.
         """
         try:
+            recipe = await self.redis_instance.json().get(user, Path(f".{recipe_id}"))
+            if not recipe:
+                self.logger.warning(f"Recipe not found: user={user}, recipe_id={recipe_id}")
+                return None
             await self.redis_instance.json().delete(user, Path(f".{recipe_id}"))
             self.logger.info(
                 f"Deleted Recipe from Redis: user={user}, recipe_id={recipe_id}"
             )
+            return recipe["imageUri"]
         except Exception as redis_error:
             self.logger.error(f"Failed to delete Recipe from Redis: {redis_error}")
 

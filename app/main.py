@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from app.routes import auth, recipes
+from app.routes import auth, recipes, upload
 
 app = FastAPI(title="Recipes Api")
 
@@ -15,4 +15,4 @@ async def root():
 
 app.include_router(auth.router, tags=["Authentication"], prefix="/api/auth")
 app.include_router(recipes.router, tags=["Recipes"], prefix="/api/recipes")
-app.include_router(recipes.router, tags=["Upload"], prefix="/api/upload")
+app.include_router(upload.router, tags=["Upload"], prefix="/api/upload")

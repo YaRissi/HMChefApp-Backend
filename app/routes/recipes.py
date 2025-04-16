@@ -6,9 +6,10 @@ from fastapi.responses import JSONResponse
 import app.services.auth as auth_service
 from app.models.models import Recipe, RecipeResponse
 from app.services.redis_hander import RedisHandler
+from app.services.uploadthing_service import UploadThingService
 
 redis_handler = RedisHandler()
-
+uploadthing_service = UploadThingService()
 
 async def lifespan(_: FastAPI):
     """Lifespan event for the FastAPI application, to close the Redis handler."""
@@ -138,7 +139,14 @@ async def delete_recipe(
         )
     await validate_header(request, user)
     try:
-        await redis_handler.delete_recipe(user, recipe_id)
+        deleted_url = await redis_handler.delete_recipe(user, recipe_id)
+        if deleted_url:
+            uploadthing_service.delete_file(deleted_url)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Recipe with ID {recipe_id} not found for user: {user}",
+            )
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={

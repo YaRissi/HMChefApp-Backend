@@ -152,7 +152,7 @@ class UploadThingService:
                 detail=f"Unexpected error: {str(e)}"
             )
 
-    def delete_file(self, file_key: str) -> bool:
+    def delete_file(self, url: str) -> bool:
         """Delete a file from UploadThing.
         
         Args:
@@ -161,6 +161,7 @@ class UploadThingService:
         Returns:
             bool: True if deletion was successful
         """
+        file_key = url.split("/")[-1]
         self.logger.info(f"Deleting file from UploadThing for key: {file_key}")
         self._make_request(
             method="POST",

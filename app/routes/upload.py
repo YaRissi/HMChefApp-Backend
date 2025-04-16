@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Query, Request, status
 from fastapi.responses import JSONResponse
 from app.routes.recipes import validate_header
@@ -28,7 +29,6 @@ async def upload_file(
     Returns:
         dict: A dictionary containing the user and image URL
     """
-    print("lol")
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="User Param is missing"
@@ -38,7 +38,7 @@ async def upload_file(
     file_data = await file.read()
     file_type = file.content_type or "application/octet-stream"
     
-    url = await uploadthing_service.upload_file(file_data, file_type, user)
+    url = uploadthing_service.upload_file(file_data, file_type, user)
     
     return JSONResponse(
         content={
