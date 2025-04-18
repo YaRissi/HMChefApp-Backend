@@ -20,7 +20,7 @@ uploadthing_service = UploadThingService()
 async def lifespan(_: FastAPI):
     """lipespan event for the FastAPI application, to close the UploadThing service."""
     yield
-    await uploadthing_service.close()
+    uploadthing_service.close()
 
 
 router = APIRouter(lifespan=lifespan)
@@ -32,8 +32,7 @@ async def upload_file(
     user: str,
     file: UploadFile = File(...),
 ) -> dict:
-    """
-    Upload a file to UploadThing and store the mapping.
+    """Upload a file to UploadThing and store the mapping.
 
     Args:
         user (str): The username

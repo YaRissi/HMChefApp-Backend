@@ -8,9 +8,6 @@ from fastapi import HTTPException
 
 from app.internal.settings import settings
 
-MAX_FILE_SIZE = 30 * 1024 * 1024  # 30MB in bytes
-ALLOWED_FILE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
-
 
 class UploadThingService:
     """Service for interacting with the UploadThing API."""
@@ -21,8 +18,11 @@ class UploadThingService:
         self.headers = {
             "x-uploadthing-api-key": self.secret_key,
         }
-        self.max_file_size = MAX_FILE_SIZE
-        self.allowed_file_types = ALLOWED_FILE_TYPES
+        self.max_file_size = 30 * 1024 * 1024  # 30MB in bytes
+        self.allowed_file_types = {
+            "image/jpeg",
+            "image/png",
+        }
         self.logger = logging.getLogger(__name__)
         self.session = requests.Session()
 
@@ -86,7 +86,7 @@ class UploadThingService:
         Raises:
             HTTPException: If file size or type is invalid
         """
-        # Validate file size
+
         self.logger.info(f"File size: {len(file_data)} bytes")
         if len(file_data) > self.max_file_size:
             raise HTTPException(
@@ -97,7 +97,7 @@ class UploadThingService:
                 },
             )
         self.logger.info(f"File type: {file_type}")
-        # Validate file type
+
         if file_type not in self.allowed_file_types:
             raise HTTPException(
                 status_code=415,
@@ -109,7 +109,6 @@ class UploadThingService:
 
         try:
             self.logger.info(f"Uploading file to UploadThing for user: {username}")
-            # Get presigned URL
             presigned_data = self._make_request(
                 method="POST",
                 endpoint="uploadFiles",
@@ -120,15 +119,12 @@ class UploadThingService:
                 },
             )
 
-            # Extract upload details
             upload_url = presigned_data["data"][0]["url"]
             fields = presigned_data["data"][0]["fields"]
             file_url = presigned_data["data"][0]["fileUrl"]
 
-            # Prepare multipart form data
             self.logger.info(f"Uploading file to UploadThing S3 for user: {username}")
 
-            # Prepare form data for upload
             files = {"file": (username, file_data, file_type)}
 
             upload_response = requests.post(

@@ -1,12 +1,16 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.13-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY app /app/
-COPY pyproject.toml /pyproject.toml
-COPY uv.lock /uv.lock
-COPY .python-version /python-version
+WORKDIR /backend
+COPY pyproject.toml /backend/pyproject.toml
+COPY uv.lock /backend/uv.lock
+COPY .python-version /backend/python-version
 
-EXPOSE 8000
+RUN uv sync --no-cache-dir
 
-ENTRYPOINT [ "uv", "run", "fastapi", "dev" ]
+COPY app /backend/app
+
+EXPOSE 8001
+
+CMD [ "uv", "run", "fastapi", "dev", "--port", "8001" ]

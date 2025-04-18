@@ -1,6 +1,5 @@
 """Service for authentication and token management."""
 
-from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 
 import jwt
@@ -15,56 +14,44 @@ REDIS_HANDLER = RedisHandler()
 
 
 async def validate_token(token: str) -> Tuple[bool, Optional[Dict[str, Any]]]:
-    """Validiert ein JWT-Token und gibt ein Tupel zurück (ist_gültig, Benutzer_info).
+    """Validates a JWT token and returns the payload if valid.
 
     Args:
-        token (str): Das zu validierende JWT-Token.
+        token (str): the JWT token to validate.
 
     Returns:
-        Tuple[bool, Optional[Dict[str, Any]]]: Gibt zurück, ob das Token gültig ist und die Benutzerinformationen.
+        Tuple[bool, Optional[Dict[str, Any]]]: A tuple containing a boolean indicating whether the token is valid and the payload if valid.
     """
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-
-        if "exp" in payload and datetime.fromtimestamp(
-            payload["exp"], tz=timezone.utc
-        ) < datetime.now(timezone.utc):
-            return False, None
 
         return True, payload
     except jwt.PyJWTError:
         return False, None
 
 
-async def create_token(data: dict, expires_delta: timedelta = None) -> str:
-    """Erstellt ein neues JWT-Token.
-       Wenn expires_delta None ist, läuft das Token niemals ab.
+async def create_token(data: dict) -> str:
+    """Creates a JWT token with the given data.
 
     Args:
-        data (dict): Die Daten, die im Token codiert werden sollen.
-        expires_delta (timedelta, optional): Die Dauer, nach der das Token abläuft. Defaults to None.
-
+        data (dict): The data to include in the token.
     Returns:
-        str: Das generierte JWT-Token.
+        str: The generated JWT token.
     """
     to_encode = data.copy()
-
-    if expires_delta is not None:
-        expire = datetime.now(timezone.utc) + expires_delta
-        to_encode.update({"exp": expire})
 
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")
 
 
 async def register_user(username: str, password: str) -> str:
-    """Registriert einen neuen Benutzer und gibt ein Token zurück.
+    """Registers a new user and returns a token.
 
     Args:
-        username (str): Der Benutzername.
-        password (str): Das Passwort.
+        username (str): The username.
+        password (str): The password.
 
     Returns:
-        str: Das generierte JWT-Token.
+        str: The generated JWT token.
     """
     if await REDIS_HANDLER.check_user(username):
         raise HTTPException(
@@ -80,14 +67,14 @@ async def register_user(username: str, password: str) -> str:
 
 
 async def authenticate_user(username: str, password: str) -> Optional[str]:
-    """Authentifiziert einen Benutzer und gibt ein Token zurück.
+    """Authenticates a user and returns a token.
 
     Args:
-        username (str): Der Benutzername.
-        password (str): Das Passwort.
+        username (str): The username.
+        password (str): The password.
 
     Returns:
-        Optional[str]: Das generierte JWT-Token oder None, wenn die Authentifizierung fehlschlägt.
+        Optional[str]: The generated JWT token or None if authentication fails.
     """
     user_hashed_password = await REDIS_HANDLER.get_user_password(username)
 

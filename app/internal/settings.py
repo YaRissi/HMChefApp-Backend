@@ -8,13 +8,10 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # Database settings
     REDIS_URL: str
 
-    # FastAPI settings
     SECRET_KEY: str
 
-    # UploadThing API settings
     UPLOADTHING_SECRET_KEY: str
 
 

@@ -24,14 +24,13 @@ class RedisHandler:
         self.logger = logging.getLogger(__name__)
 
     async def add_recipes(self, user: str, value: Recipe) -> None:
-        """Set a Recipe in Redis.
+        """Set a Recipe.
 
         Args:
             key (str): The user to set the Recipe for.
             value (Recipe): The Recipe to set.
         """
         try:
-            # Check if user exists
             exists = await self.redis_instance.exists(user)
             if not exists:
                 await self.redis_instance.json().set(user, Path.root_path(), {})
@@ -44,7 +43,7 @@ class RedisHandler:
             self.logger.error(f"Failed to set Recipes in Redis: {redis_error}")
 
     async def get_recipes(self, user: str, path: str = ".") -> List[Recipe]:
-        """Get a Recipe from Redis.
+        """Get a Recipe.
 
         Args:
             user (str): The user to get the Recipe for.
@@ -65,7 +64,7 @@ class RedisHandler:
             return []
 
     async def delete_recipe(self, user: str, recipe_id: str) -> str:
-        """Delete a Recipe from Redis.
+        """Delete a Recipe.
 
         Args:
             user (str): The user to delete the Recipe for.
@@ -87,7 +86,7 @@ class RedisHandler:
             self.logger.error(f"Failed to delete Recipe from Redis: {redis_error}")
 
     async def set_user_password(self, user: str, hashed_password: str) -> None:
-        """Set a user's password in Redis.
+        """Set a user's password.
 
         Args:
             user (str): The user to set the password for.
@@ -99,7 +98,7 @@ class RedisHandler:
             self.logger.error(f"Failed to add user to Redis: {redis_error}")
 
     async def check_user(self, user: str) -> bool:
-        """Check if a user exists in Redis.
+        """Check if a user exists.
 
         Args:
             user (str): The user to check.
@@ -113,20 +112,19 @@ class RedisHandler:
             self.logger.error(f"Failed to check user in Redis: {redis_error}")
             return False
 
-    async def get_user_password(self, user: str) -> str:
-        """Get a user's password from Redis.
+    async def get_user_password(self, user: str) -> str | None:
+        """Get a user's password.
 
         Args:
             user (str): The user to get the password for.
 
         Returns:
-            str: The hashed password.
+            str | None: The hashed password or None on error.
         """
         try:
             return await self.redis_instance.get(f"{user}_password")
         except Exception as redis_error:
             self.logger.error(f"Failed to get user from Redis: {redis_error}")
-            return ""
 
     async def close(self) -> None:
         """Close the Redis connection."""
