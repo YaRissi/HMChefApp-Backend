@@ -7,10 +7,8 @@ COPY pyproject.toml /backend/pyproject.toml
 COPY uv.lock /backend/uv.lock
 COPY .python-version /backend/python-version
 
-RUN uv sync --no-cache-dir
+RUN uv sync --no-cache-dir --no-dev
 
 COPY app /backend/app
-
-EXPOSE 8001
 
 CMD [ "uv", "run", "fastapi", "dev", "--port", "8001" ]
